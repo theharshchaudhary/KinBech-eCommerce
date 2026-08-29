@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Legacy PHP app local config (kept for reference, don't leak local DB creds if edited)
+components/connect.local.php

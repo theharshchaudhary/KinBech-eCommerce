@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProductRequest;
+use App\Http\Resources\AdminProductResource;
 use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductImageResource;
-use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductVariantResource;
 use App\Models\Product;
 use App\Models\ProductImage;
@@ -38,7 +38,7 @@ class ProductController extends Controller
             $query->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0);
         }
 
-        return ProductResource::collection($query->latest()->paginate($request->get('per_page', 15)));
+        return AdminProductResource::collection($query->latest()->paginate($request->get('per_page', 15)));
     }
 
     public function store(ProductRequest $request)

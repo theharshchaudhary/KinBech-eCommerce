@@ -1,122 +1,103 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect } from 'react'
+import { Route, Routes } from 'react-router-dom'
+import useAuthStore from './store/authStore'
 
-function App() {
-  const [count, setCount] = useState(0)
+import StorefrontLayout from './layouts/StorefrontLayout'
+import AuthLayout from './layouts/AuthLayout'
+import AdminLayout from './layouts/AdminLayout'
+import { RequireAuth, RequireStaff } from './routes/ProtectedRoute'
+
+import Home from './pages/storefront/Home'
+import Shop from './pages/storefront/Shop'
+import ProductDetail from './pages/storefront/ProductDetail'
+import Cart from './pages/storefront/Cart'
+import Wishlist from './pages/storefront/Wishlist'
+import Checkout from './pages/storefront/Checkout'
+import OrderConfirmation from './pages/storefront/OrderConfirmation'
+import Orders from './pages/storefront/Orders'
+import OrderDetail from './pages/storefront/OrderDetail'
+import Addresses from './pages/storefront/Addresses'
+import AccountLayout, { ProfileForm } from './pages/storefront/Profile'
+import Login from './pages/storefront/Login'
+import Register from './pages/storefront/Register'
+import About from './pages/storefront/About'
+import Contact from './pages/storefront/Contact'
+import NotFound from './pages/NotFound'
+
+import AdminLogin from './pages/admin/AdminLogin'
+import Dashboard from './pages/admin/Dashboard'
+import AdminProducts from './pages/admin/Products'
+import ProductForm from './pages/admin/ProductForm'
+import Categories from './pages/admin/Categories'
+import Brands from './pages/admin/Brands'
+import AdminOrders from './pages/admin/Orders'
+import AdminOrderDetail from './pages/admin/OrderDetail'
+import Customers from './pages/admin/Customers'
+import CustomerDetail from './pages/admin/CustomerDetail'
+import Coupons from './pages/admin/Coupons'
+import Reviews from './pages/admin/Reviews'
+import Messages from './pages/admin/Messages'
+import Staff from './pages/admin/Staff'
+import Settings from './pages/admin/Settings'
+
+export default function App() {
+  const hydrate = useAuthStore((s) => s.hydrate)
+
+  useEffect(() => {
+    hydrate()
+  }, [hydrate])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <Routes>
+      <Route element={<StorefrontLayout />}>
+        <Route index element={<Home />} />
+        <Route path="shop" element={<Shop />} />
+        <Route path="products/:slug" element={<ProductDetail />} />
+        <Route path="cart" element={<Cart />} />
+        <Route path="about" element={<About />} />
+        <Route path="contact" element={<Contact />} />
 
-      <div className="ticks"></div>
+        <Route element={<RequireAuth />}>
+          <Route path="wishlist" element={<Wishlist />} />
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
+          <Route path="account/orders/:id" element={<OrderDetail />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          <Route path="account" element={<AccountLayout />}>
+            <Route index element={<ProfileForm />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="addresses" element={<Addresses />} />
+          </Route>
+        </Route>
+      </Route>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <Route element={<AuthLayout />}>
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+      </Route>
+
+      <Route path="admin/login" element={<AdminLogin />} />
+
+      <Route path="admin" element={<RequireStaff />}>
+        <Route element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="products/:id" element={<ProductForm />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="brands" element={<Brands />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="orders/:id" element={<AdminOrderDetail />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="customers/:id" element={<CustomerDetail />} />
+          <Route path="coupons" element={<Coupons />} />
+          <Route path="reviews" element={<Reviews />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="staff" element={<Staff />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   )
 }
-
-export default App

@@ -22,6 +22,12 @@ class CategoryController extends Controller
             ->orderBy('sort_order')
             ->get();
 
+        // A parent's displayed count includes products filed directly under
+        // its subcategories, not just ones attached to the parent row itself.
+        $categories->each(function (Category $category) {
+            $category->products_count += $category->children->sum('products_count');
+        });
+
         return CategoryResource::collection($categories);
     }
 

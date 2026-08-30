@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -13,14 +14,19 @@ class RoleController extends Controller
 {
     /**
      * Every role with its permissions - powers the admin "Roles & Permissions" screen.
+     *
+     * Staff counts are computed via the User model rather than Role::users()
+     * (Spatie's morphedByMany relation resolves its related model from the
+     * role's guard at query-build time, which throws when withCount() builds
+     * the relation off an attribute-less model instance).
      */
     public function index()
     {
-        return Role::with('permissions')->withCount('users')->get()->map(fn ($role) => [
+        return Role::with('permissions')->get()->map(fn ($role) => [
             'id' => $role->id,
             'name' => $role->name,
             'is_protected' => $role->name === 'Super Admin',
-            'users_count' => $role->users_count,
+            'users_count' => User::role($role->name)->count(),
             'permissions' => $role->permissions->pluck('name'),
         ]);
     }
@@ -77,7 +83,7 @@ class RoleController extends Controller
             throw ValidationException::withMessages(['name' => 'The Super Admin role cannot be deleted.']);
         }
 
-        if ($role->users()->exists()) {
+        if (User::role($role->name)->exists()) {
             throw ValidationException::withMessages(['role' => 'Reassign staff away from this role before deleting it.']);
         }
 
